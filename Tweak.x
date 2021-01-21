@@ -34,17 +34,7 @@ static BOOL locked = NO;
 
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.pictureInPictureViewController.view addGestureRecognizer:longPressGesture];
-    self.pictureInPictureViewController.view.layer.borderWidth = 1.5;
-}
-
-%new
-- (void)handleLongPressGesture: (UILongPressGestureRecognizer *)sender {
-    if (sender.state != UIGestureRecognizerStateBegan) return;
-
-    if(locked) self.pictureInPictureViewController.view.layer.borderColor = [UIColor clearColor].CGColor;
-    else self.pictureInPictureViewController.view.layer.borderColor = [UIColor redColor].CGColor;
-
-    locked = !locked; // Revert the value
+    [self setupBorder];
 }
 
 // iOS13
@@ -57,7 +47,6 @@ static BOOL locked = NO;
         [sender setTranslation:CGPointZero inView: self.pictureInPictureViewController.view];
     }
 }
-
 -(void)_handlePinchGesture:(UIPinchGestureRecognizer *)sender {
     if(locked) %orig;
     else if(sender.state == UIGestureRecognizerStateChanged) {
@@ -71,7 +60,6 @@ static BOOL locked = NO;
     // Prevent updating layout by rotation gesture
     if(locked) %orig;
 }
-
 -(void)setContentViewPadding:(UIEdgeInsets)arg1 animationDuration:(double)arg2 animationOptions:(unsigned long long)arg3 {
     // Prevent updating padding when switching apps
     if(locked) %orig;
@@ -82,6 +70,24 @@ static BOOL locked = NO;
     // Prevent updating padding when switching apps
     if(!locked) arg1 = UIEdgeInsetsZero;
     %orig(arg1);
+}
+
+// New methods for this tweak
+%new
+-(void)handleLongPressGesture: (UILongPressGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateBegan) return;
+
+    locked = !locked; // Revert the value
+
+    [self setupBorder];
+}
+
+%new
+-(void)setupBorder {
+    self.pictureInPictureViewController.view.layer.borderWidth = 1.5;
+
+    if(!locked) self.pictureInPictureViewController.view.layer.borderColor = [UIColor clearColor].CGColor;
+    else self.pictureInPictureViewController.view.layer.borderColor = [UIColor redColor].CGColor;
 }
 %end
 
