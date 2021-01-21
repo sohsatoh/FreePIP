@@ -25,7 +25,7 @@
 // End Ref
 
 
-static BOOL locked = YES;
+static BOOL locked = NO;
 
 
 %hook SBPIPContainerViewController
