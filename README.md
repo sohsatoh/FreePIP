@@ -1,6 +1,6 @@
 # FreePIP
 
-FreePIP is a tweak to the iOS Picture-in-Picture to un-snap and scale the view unlimitedly.
+FreePIP is a tweak to un-snap and scale the view of Picture-in-Picture on iOS unlimitedly.
 
 ## Features
 
