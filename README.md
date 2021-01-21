@@ -24,6 +24,6 @@ make setup simulator=1
 
 ## License
 
-MIT License
+ GPL-3.0 License
 
 **If you use the code of this tweak, you are obliged to publish the code for both commercial and personal use**
