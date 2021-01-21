@@ -18,6 +18,10 @@ Just build using Theos
 
 If you are using simulator and simject, you can build and install this by using following command.
 
+```bash
+make setup simulator=1
+```
+
 ## License
 
 MIT License
