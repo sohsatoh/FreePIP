@@ -24,6 +24,6 @@ make setup simulator=1
 
 ## License
 
- GPL-3.0 License
+GPL-3.0 License
 
-**If you use the code of this tweak, you are obliged to publish the code for both commercial and personal use**
+**If you use the code of this tweak, you are obliged to publish the code. It applied to BOTH commercial and personal.**
