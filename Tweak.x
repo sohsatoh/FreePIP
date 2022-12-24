@@ -27,13 +27,18 @@
 
 static BOOL locked = NO;
 
+static UIView *getContentView(SBPIPContainerViewController *self) {
+    if ([self respondsToSelector:@selector(pictureInPictureViewController)])
+        return self.pictureInPictureViewController.view;
+    return self.contentViewController.view;
+}
 
 %hook SBPIPContainerViewController
 -(void)loadView {
     %orig;
 
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    [self.pictureInPictureViewController.view addGestureRecognizer:longPressGesture];
+    [getContentView(self) addGestureRecognizer:longPressGesture];
     [self setupBorder];
 }
 
@@ -84,26 +89,32 @@ static BOOL locked = NO;
 
 %new
 -(void)setupBorder {
-    self.pictureInPictureViewController.view.layer.borderWidth = 1.5;
+    UIView *view = getContentView(self);
+    view.layer.borderWidth = 1.5;
 
-    if(!locked) self.pictureInPictureViewController.view.layer.borderColor = [UIColor clearColor].CGColor;
-    else self.pictureInPictureViewController.view.layer.borderColor = [UIColor redColor].CGColor;
+    if(!locked) view.layer.borderColor = [UIColor clearColor].CGColor;
+    else view.layer.borderColor = [UIColor redColor].CGColor;
 }
 %end
 
+static UIView *getTargetView(SBPIPInteractionController *self, UIGestureRecognizer *sender) {
+    if ([self respondsToSelector:@selector(targetView)])
+        return [self targetView];
+    return UIViewParentController(sender.view).view;
+}
 
-// iOS14
+// iOS14+
 // Here is using the same logic as in iOS13, but there seems to be a better way.
 %hook SBPIPInteractionController
 -(void)handlePanGesture: (UIPanGestureRecognizer *)sender {
     if(locked) %orig;
     else if(sender.state == UIGestureRecognizerStateChanged) {
         // Change the position of the view using CGAffineTransform
-        UIViewController *pgpVC = UIViewParentController(sender.view);
+        UIView *view = getTargetView(self, sender);
 
-        CGPoint translation = [sender translationInView:pgpVC.view];
-        pgpVC.view.transform = CGAffineTransformTranslate(pgpVC.view.transform, translation.x, translation.y);
-        [sender setTranslation:CGPointZero inView: pgpVC.view];
+        CGPoint translation = [sender translationInView:view];
+        view.transform = CGAffineTransformTranslate(view.transform, translation.x, translation.y);
+        [sender setTranslation:CGPointZero inView: view];
     }
 
 }
@@ -111,8 +122,8 @@ static BOOL locked = NO;
     if(locked) %orig;
     else if(sender.state == UIGestureRecognizerStateChanged) {
         // Change the scale of the view using CGAffineTransform
-        UIViewController *pgpVC = UIViewParentController(sender.view);
-        pgpVC.view.transform = CGAffineTransformScale(pgpVC.view.transform, sender.scale, sender.scale);
+        UIView *view = getTargetView(self, sender);
+        view.transform = CGAffineTransformScale(view.transform, sender.scale, sender.scale);
         sender.scale = 1.0;
     }
 }
