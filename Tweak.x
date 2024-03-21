@@ -141,7 +141,6 @@ static UIView *getTargetView(SBPIPInteractionController *self, UIGestureRecogniz
     NSLog(@"freepip - target is simulator");
     #else
     NSLog(@"frepip - target is a real device");
-    if(![[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/jp.soh.freepip.list"]) return; // Prevent initializing the tweak if the tweak is malformed (Extremely easy to bypass it, but the pirate repos like HYI cannot bypass it lol)
     #endif
 
     %init; // initialize the tweak
